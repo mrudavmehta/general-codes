@@ -1,0 +1,87 @@
+create database hotel_mgmt;
+use hotel_mgmt;
+
+create table Customer(CustomerID int NOT NULL PRIMARY KEY,
+       CustomerName varchar(40) NOT NULL,
+                      Gender varchar(1),
+                      CONSTRAINT GenderCheck CHECK (Gender = 'F' OR Gender = 'M' OR Gender = 'O'),
+                      Birthdate date NOT NULL,
+                      Nationality varchar(30));
+                                            
+create table Facility(FacilityID int NOT NULL PRIMARY KEY,
+       FacilityName varchar(50) NOT NULL,
+       FromTime time NOT NULL,
+                      ToTime time NOT NULL,
+                      CONSTRAINT TimeCheck CHECK (FromTime <= ToTime));
+                      
+create table Room(RoomTypeID int NOT NULL PRIMARY KEY,
+      RoomType varchar(25) NOT NULL,
+                  Price int(5) NOT NULL,
+                  Views varchar(4) NOT NULL);
+                  
+create table FacRoom(FacilityID int NOT NULL,
+      RoomTypeID int NOT NULL,
+                     AdditionalPrice int NOT NULL,
+                     PRIMARY KEY (FacilityID, RoomTypeID, AdditionalPrice),
+                     CONSTRAINT FK1 Foreign Key(FacilityID) REFERENCES Facility(FacilityID),
+                     CONSTRAINT FK2 Foreign Key(RoomTypeID) REFERENCES Room(RoomTypeID));
+                     
+create table FacRoomCust(FacilityID int NOT NULL,
+       RoomTypeID int NOT NULL,
+                         CustomerID int NOT NULL,
+                         PRIMARY KEY(FacilityID, RoomTypeID, CustomerID),
+                         CONSTRAINT FK3 Foreign Key(FacilityID) REFERENCES Facility(FacilityID),
+                         CONSTRAINT FK4 Foreign Key(RoomTypeID) REFERENCES Room(RoomTypeID),
+                         CONSTRAINT FK5 Foreign Key(CustomerID) REFERENCES Customer(CustomerID));
+     
+
+                  
+insert into Customer values(1,'Jameel Dinah','M','1949-11-29','Saudi Arabia');
+insert into Customer values(2,'Josh Juventas','M','1988-04-23','Italy');
+insert into Customer values(3,'Oyibo Yuri','F','1996-04-16','Morocco');
+insert into Customer values(4,'Aishwarya Huhana','F','1980-06-08','India');
+insert into Customer values(5,'Tayyip Junaid','M','1987-07-12','Turkey');
+insert into Customer values(6,'Azar Dimitriou','O','1993-01-11','Iran');
+insert into Customer values(7,'Leonardo Michaelangelo','M','1924-12-12','USA');
+
+insert into Room values(1,'Standard',199,'City');
+insert into Room values(2,'Standard Twin',349,'City');
+insert into Room values(3,'Executive',399,'City');
+insert into Room values(4,'Executive Suite',699,'Pool');
+insert into Room values(5,'Twin Suite',899,'Pool');
+insert into Room values(6,'Duplex Suite',1099,'Pool');
+insert into Room values(7,'Presidential Suite',1499,'Pool');
+
+insert into Facility values(001,'Swimming Pool','05:30:00','23:50:00');
+insert into Facility values(002,'Gym','05:30:00','23:50:00');
+insert into Facility values(003,'Library','08:00:00','22:00:00');
+insert into Facility values(004,'Cinema','11:00:00','23:59:59');
+insert into Facility values(005,'Laundry','08:00:00','20:00:00');
+insert into Facility values(006,'Room Service','00:00:00','00:00:00');
+insert into Facility values(007,'Butler','00:00:00','00:00:00');
+
+insert into FacRoom values(001,1,0);
+insert into FacRoom values(002,2,0);
+insert into FacRoom values(003,3,15);
+insert into FacRoom values(004,4,50);
+insert into FacRoom values(005,5,10);
+insert into FacRoom values(006,6,0);
+insert into FacRoom values(007,7,500);
+
+insert into FacRoomCust values(001,1,1);
+insert into FacRoomCust values(002,2,2);
+insert into FacRoomCust values(003,3,3);
+insert into FacRoomCust values(004,4,4);
+insert into FacRoomCust values(005,5,5);
+insert into FacRoomCust values(006,6,6);
+insert into FacRoomCust values(007,7,7);
+
+
+create view cust_details as select CustomerName, Gender, Birthdate from Customer;
+create view facility_details as select FacilityName, FromTime, ToTime from Facility;
+create view room_details as select RoomType, Price, Views from Room;
+
+
+create index room_index on Room(RoomType);
+create index facility_index on Facility (FacilityName);
+create index customer_index on Customer (CustomerName);
